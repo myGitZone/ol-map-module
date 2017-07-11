@@ -43,6 +43,7 @@
     .tool-item {
       display: inline-block;
       font-size: 16px;
+      vertical-align: top;
     }
   }
 </style>
