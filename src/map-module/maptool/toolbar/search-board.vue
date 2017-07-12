@@ -6,11 +6,13 @@
       <button @click="searchHandler">查询</button>
     </div>
     <div class="list-container">
-      <item :key="item.uid" v-for="(item, index) in currentDatas" :data="item"><img :src="icons[index]"
-                                                                                    alt=""></item>
+      <div class="lable" v-if="lable">{{lable}}</div>
+      <item @itemClick="searchItemClick" :key="item.uid" v-for="(item, index) in currentDatas" :data="item"><img
+        :src="icons[index]"
+        alt=""></item>
     </div>
-    <div class="page-info">
-      <div class="page-control" v-if="currentDatas.length">
+    <div class="page-info" v-if="currentDatas.length">
+      <div class="page-control">
         <span class="page-control-item">
           <a class="page-operation" href="javascript:void(0)" @click="goHomePage">首页</a>
         </span>
@@ -35,7 +37,6 @@
   </div>
 </template>
 <script>
-  import ol from 'openlayers'
   import CoorConvertClass from '../../bmap/coordinateConvert'
   import Item from '../../../components/search-item'
   import '../../bmap/bmapLoader'
@@ -50,20 +51,7 @@
   import icon9 from '../../image/map/search/red_9.png'
   import icon10 from '../../image/map/search/red_10.png'
   const ICONS = [icon1, icon2, icon3, icon4, icon5, icon6, icon7, icon8, icon9, icon10]
-  let PIC_MARK = []
-  for (let i = 1; i <= 10; i++) {
-    let icon = new ol.style.Icon({
-      offset: [0, 0],
-      opacity: 1.0,
-      rotateWithView: true,
-      rotation: 0.0,
-      scale: 1.0,
-      size: [21, 31],
-      crossOrigin: 'anonymous',
-      src: 'https://openlayers.org/en/v4.2.0/examples/data/Butterfly.png'
-    })
-    PIC_MARK.push(icon)
-  }
+  const ZOOM_INDEX = 18
   export default {
     name: 'searchBoard',
     props: {
@@ -78,12 +66,13 @@
         currentDatas: [],
         currentPage: 1,
         totalPage: 0,
-        icons: ICONS
+        icons: ICONS,
+        features: [],
+        lable: null
       }
     },
     watch: {
       currentPage() {
-        this.currentPage
         this.searchResult = this.localSearch.gotoPage(this.currentPage - 1)
         this.getCurrentShowList()
       },
@@ -94,37 +83,63 @@
           this.currentDatas = []
           this.currentPage = 1
           this.totalPage = 0
+          this.lable = null
+          this.source.clear()
         }
       }
     },
+    created() {
+      this.initPicMark()
+    },
     mounted() {
+      this.projectionCode = this.map.getView().getProjection().getCode()
       this.bmap = new window.BMap.Map('baidumapcontain')
       this.localSearch = new window.BMap.LocalSearch(this.bmap)
       this.localSearch.setSearchCompleteCallback(this.searchRsultCallBack)
       this.initLayer()
     },
     methods: {
+      initPicMark() {
+        this.PIC_MARK = []
+        for (let i = 1; i <= 10; i++) {
+          let icon = new this.$ol.style.Icon({
+            offset: [0, 0],
+            opacity: 1.0,
+            rotateWithView: true,
+            rotation: 0.0,
+            scale: 1.0,
+            size: [21, 31],
+            crossOrigin: 'anonymous',
+            src: ICONS[i - 1]
+          })
+          this.PIC_MARK.push(icon)
+        }
+      },
       initLayer() {
-        this.source = new ol.source.Vector({
-          wrapX: false
+        this.source = new this.$ol.source.Vector({
+          features: this.features
         })
-        var vector = new ol.layer.Vector({
+        var vector = new this.$ol.layer.Vector({
           source: this.source
         })
         this.map.addLayer(vector)
       },
       searchHandler() {
         let extent = this.map.getView().calculateExtent(this.map.getSize())
-        let projectionCode = this.map.getView().getProjection().getCode()
         let minPoint = [extent[0], extent[1]]
         let maxPoint = [extent[2], extent[3]]
-        let tranMinPoint = ol.proj.transform(minPoint, projectionCode, 'EPSG:4326')
-        let tranMaxPoint = ol.proj.transform(maxPoint, projectionCode, 'EPSG:4326')
+        let tranMinPoint = this.$ol.proj.transform(minPoint, this.projectionCode, 'EPSG:4326')
+        let tranMaxPoint = this.$ol.proj.transform(maxPoint, this.projectionCode, 'EPSG:4326')
         var b = new window.BMap.Bounds(new window.BMap.Point(tranMinPoint[0], tranMinPoint[1]), new window.BMap.Point(tranMaxPoint[0], tranMaxPoint[1]))
         this.localSearch.searchInBounds(this.keywords, b)
       },
       searchRsultCallBack(searchResult) {
-        if (!searchResult || searchResult.getNumPois == null) {
+        this.currentDatas = []
+        this.source.clear()
+        this.lable = null
+        if (!searchResult || searchResult.getNumPois == null || searchResult.getCurrentNumPois() === 0) {
+          debugger
+          this.lable = '搜索范围过大或未查到相关数据'
           return
         }
         this.totalPage = searchResult.getNumPages()
@@ -141,17 +156,23 @@
         }
       },
       drawMarkToMap(item, index) {
-        debugger
-        let projectionCode = this.map.getView().getProjection().getCode()
-        let tranMinPoint = ol.proj.transform([item.point.lat, item.point.lng], 'EPSG:4326', projectionCode)
-        let geometry = new ol.geom.Point(tranMinPoint)
-        let feature = new ol.Feature(geometry)
+        let tdPoi = this.coorConvert(item)
+        let geometry = new this.$ol.geom.Point(this.$ol.proj.transform([tdPoi.lon, tdPoi.lat],
+          'EPSG:4326', this.projectionCode))
+        let feature = new this.$ol.Feature(geometry)
         feature.setStyle(
-          new ol.style.Style({
-            image: PIC_MARK[index]
+          new this.$ol.style.Style({
+            image: this.PIC_MARK[index]
           })
         )
         this.source.addFeature(feature)
+      },
+      searchItemClick(item) {
+        let tdPoi = this.coorConvert(item)
+        let point = this.$ol.proj.transform([tdPoi.lon, tdPoi.lat], 'EPSG:4326', this.projectionCode)
+        let view = this.map.getView()
+        view.setCenter(point)
+        view.setZoom(ZOOM_INDEX)
       },
       coorConvert(bPoi) {
         var bdtogcjPoint = CoorConvertClass.bd_decrypt(bPoi.point.lat, bPoi.point.lng)
@@ -200,6 +221,12 @@
     .list-container {
       max-height: 600px;
       overflow: auto;
+      .lable {
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        color: #fff;
+      }
     }
     .page-info {
       position: relative;

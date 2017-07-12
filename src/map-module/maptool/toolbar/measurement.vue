@@ -7,7 +7,7 @@
   import MeasureBoard from './measure-board'
   import {getMapVm} from '../../js/util'
   export default {
-    name: 'measurement',
+    name: 'measureMent',
     mounted() {
       let parentVm = getMapVm(this)
       parentVm.registerComponent(MeasureBoard)

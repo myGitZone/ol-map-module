@@ -33,7 +33,6 @@
 </template>
 <script>
   //  lat-纬度,lng-经度
-  import ol from 'openlayers'
   import {formatLength, formatArea} from '../../js/util'
   import icon from '../../image/position.png'
   const FIXED = 6
@@ -49,8 +48,8 @@
       return {
         currntTool: '',
         unitListShow: false,
-        features: new ol.Collection(),
-        sphere: new ol.Sphere(6378137),
+        features: null,
+        sphere: null,
         result: '',
         currentUnits: [],
         currentUnitIndex: 0,
@@ -119,23 +118,25 @@
       }
     },
     mounted() {
+      this.features = new this.$ol.Collection()
+      this.sphere = new this.$ol.Sphere(6378137)
       this.initTempLayer()
     },
     methods: {
       initTempLayer() {
-        this.featureOverlay = new ol.layer.Vector({
-          source: new ol.source.Vector({features: this.features}),
-          style: new ol.style.Style({
-            fill: new ol.style.Fill({
+        this.featureOverlay = new this.$ol.layer.Vector({
+          source: new this.$ol.source.Vector({features: this.features}),
+          style: new this.$ol.style.Style({
+            fill: new this.$ol.style.Fill({
               color: 'rgba(255, 255, 255, 0.2)'
             }),
-            stroke: new ol.style.Stroke({
+            stroke: new this.$ol.style.Stroke({
               color: '#ffcc33',
               width: 2
             }),
-            image: new ol.style.Circle({
+            image: new this.$ol.style.Circle({
               radius: 7,
-              fill: new ol.style.Fill({
+              fill: new this.$ol.style.Fill({
                 color: '#ffcc33'
               })
             })
@@ -170,7 +171,7 @@
       getOverlay() {
         const iconPic = document.createElement('img')
         iconPic.src = icon
-        const overlay = new ol.Overlay({
+        const overlay = new this.$ol.Overlay({
           id: 'point-position-overlay',
           element: iconPic,
           offset: [0, -15],
@@ -182,8 +183,8 @@
         this.unitListShow = !this.unitListShow
       },
       removeMousePositionListen() {
-        ol.Observable.unByKey(this.mapClick)
-        ol.Observable.unByKey(this.mouseMove)
+        this.$ol.Observable.unByKey(this.mapClick)
+        this.$ol.Observable.unByKey(this.mouseMove)
       },
       mousePositionChange() {
         this.mapClick = this.map.on('click', (e) => {
@@ -198,14 +199,14 @@
         let output
         let projectionCode = this.map.getView().getProjection().getCode()
         if (projectionCode !== targetProjectCode) {
-          output = ol.proj.transform(coordinate, projectionCode, targetProjectCode)
+          output = this.$ol.proj.transform(coordinate, projectionCode, targetProjectCode)
         } else {
           output = coordinate
         }
         return output
       },
       changeTool(type) {
-        this.draw = new ol.interaction.Draw({
+        this.draw = new this.$ol.interaction.Draw({
           features: this.features,
           type: type
         })
@@ -215,17 +216,17 @@
           this.sketch = evt.feature
           this.listener = this.sketch.getGeometry().on('change', (evt) => {
             let geom = evt.target
-            if (geom instanceof ol.geom.Polygon) {
-              this.output = formatArea(geom, this.map)
-            } else if (geom instanceof ol.geom.LineString) {
-              this.output = formatLength(geom, this.map)
+            if (geom instanceof this.$ol.geom.Polygon) {
+              this.output = formatArea(geom, this.map, this.$ol)
+            } else if (geom instanceof this.$ol.geom.LineString) {
+              this.output = formatLength(geom, this.map, this.$ol)
             }
             console.log(this.output)
           })
         })
         this.draw.on('drawend', () => {
           this.sketch = null
-          ol.Observable.unByKey(this.listener)
+          this.$ol.Observable.unByKey(this.listener)
         })
       },
       selectUnit(val) {

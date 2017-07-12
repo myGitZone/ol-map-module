@@ -2,7 +2,6 @@
   <div :style="location" id="overview-container"></div>
 </template>
 <script>
-  import ol from 'openlayers'
   import {LOCATION_LEFT, LOCATION_RIGHT} from '../enum/enum'
   export default {
     name: 'OverviewMap',
@@ -50,7 +49,7 @@
           collapseLabel = '\u00BB'
           label = '\u00AB'
         }
-        this.overviewMapControl = new ol.control.OverviewMap({
+        this.overviewMapControl = new this.$ol.control.OverviewMap({
           className: className,
           layers: layers,
           collapseLabel: collapseLabel,

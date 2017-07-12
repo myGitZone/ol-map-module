@@ -10,14 +10,13 @@
   export default {
     name: 'search',
     mounted() {
-      let parentVm = getMapVm(this)
-      parentVm.registerComponent(SearchBoard)
+      this.parentVm = getMapVm(this)
+      this.parentVm.registerComponent(SearchBoard)
     },
     methods: {
       searchClick() {
         this.show = !this.show
-        let parentVm = getMapVm(this)
-        parentVm.showBoard(SearchBoard)
+        this.parentVm.showBoard(SearchBoard)
       }
     }
   }

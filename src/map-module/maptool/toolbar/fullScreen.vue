@@ -31,9 +31,9 @@
       width: 20px;
       height: 20px;
       background-size: contain !important;
-      background: #0a2f4d url('../../image/map/toolbar/zoomin.png') no-repeat;
+      background: #0a2f4d url('../../image/map/toolbar/allScreen.png') no-repeat;
       &:hover {
-        background: #0a2f4d url('../../image/map/toolbar/zoomin_selected.png') no-repeat;
+        background: #0a2f4d url('../../image/map/toolbar/allScreen_selected.png') no-repeat;
       }
     }
   }

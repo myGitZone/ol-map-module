@@ -15,20 +15,6 @@
   </div>
 </template>
 <script>
-  import ol from 'openlayers'
-
-  const BASE_LAYER = new ol.layer.Tile({
-    title: '天地图路网',
-    source: new ol.source.XYZ({
-      url: 'http://t4.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}'
-    })
-  })
-  const BASE_LABLE_LAYER = new ol.layer.Tile({
-    title: '天地图文字标注',
-    source: new ol.source.XYZ({
-      url: 'http://t3.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}'
-    })
-  })
   export default {
     name: 'olMap',
     props: {
@@ -56,12 +42,24 @@
       }
     },
     mounted() {
+      this.BASE_LAYER = new this.$ol.layer.Tile({
+        title: '天地图路网',
+        source: new this.$ol.source.XYZ({
+          url: 'http://t4.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}'
+        })
+      })
+      this.BASE_LABLE_LAYER = new this.$ol.layer.Tile({
+        title: '天地图文字标注',
+        source: new this.$ol.source.XYZ({
+          url: 'http://t3.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}'
+        })
+      })
       setTimeout(() => {
-        this.map = new ol.Map({
+        this.map = new this.$ol.Map({
           target: 'map',
           controls: [],
-          layers: [BASE_LAYER, BASE_LABLE_LAYER],
-          view: new ol.View(
+          layers: [this.BASE_LAYER, this.BASE_LABLE_LAYER],
+          view: new this.$ol.View(
             this.viewParams
           )
         })

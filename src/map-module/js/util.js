@@ -1,5 +1,3 @@
-import ol from 'openlayers'
-
 export function getMapVm(vm) {
   let parentObj = vm.$parent
 
@@ -12,13 +10,13 @@ export function getMapVm(vm) {
   return null
 }
 
-let wgs84Sphere = new ol.Sphere(6378137)
 /**
  * Format length output.
  * @param {ol.geom.LineString} line The line.
  * @return {string} The formatted length.
  */
-export function formatLength(line, map) {
+export function formatLength(line, map, ol) {
+  let wgs84Sphere = new ol.Sphere(6378137)
   var length
 
   var coordinates = line.getCoordinates()
@@ -37,7 +35,8 @@ export function formatLength(line, map) {
  * @param {ol.geom.Polygon} polygon The polygon.
  * @return {string} Formatted area.
  */
-export function formatArea(polygon, map) {
+export function formatArea(polygon, map, ol) {
+  let wgs84Sphere = new ol.Sphere(6378137)
   var area
   var sourceProj = map.getView().getProjection()
   var geom = (polygon.clone().transform(sourceProj, 'EPSG:4326'))

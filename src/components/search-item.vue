@@ -1,5 +1,5 @@
 <template>
-  <div class="item-container">
+  <div class="item-container" @click.stop="itemClick">
     <div class="item-name">
       <span class="icon">
         <slot></slot>
@@ -28,6 +28,11 @@
       },
       desc() {
         return this.data.address
+      }
+    },
+    methods: {
+      itemClick() {
+        this.$emit('itemClick', this.data)
       }
     }
   }

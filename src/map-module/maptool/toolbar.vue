@@ -1,5 +1,6 @@
 <template>
   <div class="tool-bar">
+    <location class="tool-item":map="map"></location>
     <search class="tool-item"></search>
     <zoom-in class="tool-item" :map="map"></zoom-in>
     <zoom-out class="tool-item" :map="map"></zoom-out>
@@ -10,14 +11,16 @@
   </div>
 </template>
 <script>
-  import Search from './toolbar/search'
-  import ZoomIn from './toolbar/zoomIn'
-  import ZoomOut from './toolbar/zoomOut'
-  import FullExtent from './toolbar/fullExtent'
-  import FullScreen from './toolbar/fullScreen'
-  import MeasureMent from './toolbar/measurement'
-  import RenderClear from './toolbar/renderClear'
+//  import Location from './toolbar/location'
+//  import Search from './toolbar/search'
+//  import ZoomIn from './toolbar/zoomIn'
+//  import ZoomOut from './toolbar/zoomOut'
+//  import FullExtent from './toolbar/fullExtent'
+//  import FullScreen from './toolbar/fullScreen'
+//  import MeasureMent from './toolbar/measurement'
+//  import RenderClear from './toolbar/renderClear'
   export default {
+    name: 'toolBar',
     props: {
       map: {
         type: Object
@@ -25,15 +28,6 @@
       viewParams: {
         type: Object
       }
-    },
-    components: {
-      ZoomIn,
-      ZoomOut,
-      FullExtent,
-      FullScreen,
-      MeasureMent,
-      RenderClear,
-      Search
     }
   }
 </script>
