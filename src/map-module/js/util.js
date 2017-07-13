@@ -9,7 +9,56 @@ export function getMapVm(vm) {
   }
   return null
 }
-
+/**
+ * normal 矢量
+ * earch 地形
+ * terrain 影像
+ * */
+export function getBaseLayers(type, ol) {
+  let BASE_LAYER = null
+  let BASE_LABLE_LAYER = null
+  if (type === 'normal') {
+    BASE_LAYER = new ol.layer.Tile({
+      title: 'baseMap',
+      source: new ol.source.XYZ({
+        url: 'http://t4.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}'
+      })
+    })
+    BASE_LABLE_LAYER = new ol.layer.Tile({
+      title: 'baseMapLable',
+      source: new ol.source.XYZ({
+        url: 'http://t3.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}'
+      })
+    })
+  } else if (type === 'earch') {
+    BASE_LAYER = new ol.layer.Tile({
+      title: 'baseMap',
+      source: new ol.source.XYZ({
+        url: 'http://t4.tianditu.com/DataServer?T=ter_w&x={x}&y={y}&l={z}'
+      })
+    })
+    BASE_LABLE_LAYER = new ol.layer.Tile({
+      title: 'baseMapLable',
+      source: new ol.source.XYZ({
+        url: 'http://t3.tianditu.com/DataServer?T=cta_w&x={x}&y={y}&l={z}'
+      })
+    })
+  } else {
+    BASE_LAYER = new ol.layer.Tile({
+      title: 'baseMap',
+      source: new ol.source.XYZ({
+        url: 'http://t4.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}'
+      })
+    })
+    BASE_LABLE_LAYER = new ol.layer.Tile({
+      title: 'baseMapLable',
+      source: new ol.source.XYZ({
+        url: 'http://t3.tianditu.com/DataServer?T=cia_w&x={x}&y={y}&l={z}'
+      })
+    })
+  }
+  return {BASE_LAYER, BASE_LABLE_LAYER}
+}
 /**
  * Format length output.
  * @param {ol.geom.LineString} line The line.
