@@ -138,7 +138,6 @@
         this.source.clear()
         this.lable = null
         if (!searchResult || searchResult.getNumPois == null || searchResult.getCurrentNumPois() === 0) {
-          debugger
           this.lable = '搜索范围过大或未查到相关数据'
           return
         }

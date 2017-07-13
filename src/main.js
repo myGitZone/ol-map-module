@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App'
-import OlMap from '../dist/static/js/app.js'
-// import OlMap from './index.js'
+// import OlMap from '../dist/static/js/app.js'
+import OlMap from './index.js'
 import '../node_modules/openlayers/dist/ol-debug.css'
 import '../dist/static/css/app.css'
 

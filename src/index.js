@@ -1,6 +1,7 @@
 import ol from 'openlayers'
 import OlMap from './map-module/map/ol-map'
 import OverviewMap from './map-module/maptool/overviewMap'
+import MapType from './map-module/maptool/mapType'
 import ToolBar from './map-module/maptool/toolbar'
 
 import Location from './map-module/maptool/toolbar/location'
@@ -15,6 +16,7 @@ import RenderClear from './map-module/maptool/toolbar/renderClear'
 var components = [
   OlMap,
   OverviewMap,
+  MapType,
   ToolBar,
   Location,
   Search,
@@ -36,6 +38,7 @@ const install = function (Vue) {
 export default {
   OlMap,
   OverviewMap,
+  MapType,
   ToolBar,
   Location,
   Search,
