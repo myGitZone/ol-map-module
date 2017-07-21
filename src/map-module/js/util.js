@@ -14,50 +14,57 @@ export function getMapVm(vm) {
  * earch 地形
  * terrain 影像
  * */
-export function getBaseLayers(type, ol) {
+export function getBaseLayers(type, ol, projection) {
   let BASE_LAYER = null
   let BASE_LABLE_LAYER = null
   if (type === 'normal') {
-    BASE_LAYER = new ol.layer.Tile({
-      title: 'baseMap',
-      source: new ol.source.XYZ({
-        url: 'http://t4.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}'
-      })
-    })
-    BASE_LABLE_LAYER = new ol.layer.Tile({
-      title: 'baseMapLable',
-      source: new ol.source.XYZ({
-        url: 'http://t3.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}'
-      })
-    })
+    BASE_LAYER = getTdtLayer(ol, 'vec_c', 'baseMap', projection)
+    BASE_LABLE_LAYER = getTdtLayer(ol, 'cva_c', 'baseMapLable', projection)
   } else if (type === 'earch') {
-    BASE_LAYER = new ol.layer.Tile({
-      title: 'baseMap',
-      source: new ol.source.XYZ({
-        url: 'http://t4.tianditu.com/DataServer?T=ter_w&x={x}&y={y}&l={z}'
-      })
-    })
-    BASE_LABLE_LAYER = new ol.layer.Tile({
-      title: 'baseMapLable',
-      source: new ol.source.XYZ({
-        url: 'http://t3.tianditu.com/DataServer?T=cta_w&x={x}&y={y}&l={z}'
-      })
-    })
+    BASE_LAYER = getTdtLayer(ol, 'ter_c', 'baseMap', projection)
+    BASE_LABLE_LAYER = getTdtLayer(ol, 'cta_c', 'baseMapLable', projection)
   } else {
-    BASE_LAYER = new ol.layer.Tile({
-      title: 'baseMap',
-      source: new ol.source.XYZ({
-        url: 'http://t4.tianditu.com/DataServer?T=img_w&x={x}&y={y}&l={z}'
-      })
-    })
-    BASE_LABLE_LAYER = new ol.layer.Tile({
-      title: 'baseMapLable',
-      source: new ol.source.XYZ({
-        url: 'http://t3.tianditu.com/DataServer?T=cia_w&x={x}&y={y}&l={z}'
-      })
-    })
+    BASE_LAYER = getTdtLayer(ol, 'img_c', 'baseMap', projection)
+    BASE_LABLE_LAYER = getTdtLayer(ol, 'cia_c', 'baseMapLable', projection)
   }
-  return {BASE_LAYER, BASE_LABLE_LAYER}
+  return { BASE_LAYER, BASE_LABLE_LAYER }
+}
+function getTdtLayer(ol, lyr, title, projection) {
+  var url = 'http://t0.tianditu.com/DataServer?T=' + lyr + '&X={x}&Y={y}&L={z}'
+  var projectionExtent = [-180, -90, 180, 90]
+  var maxResolution = (ol.extent.getWidth(projectionExtent) / (256 * 2))
+  var resolutions = new Array(16)
+  var z
+  for (z = 0; z < 16; ++z) {
+    resolutions[z] = maxResolution / Math.pow(2, z)
+  }
+  var tileOrigin = ol.extent.getTopLeft(projectionExtent)
+  var layer = new ol.layer.Tile({
+    title: title,
+    extent: [-180, -90, 180, 90],
+    source: new ol.source.TileImage({
+      tileUrlFunction: function (tileCoord) {
+        var z = tileCoord[0] + 1
+        var x = tileCoord[1]
+        var y = -tileCoord[2] - 1
+        var n = Math.pow(2, z + 1)
+        x = x % n
+        if (x * n < 0) {
+          x = x + n
+        }
+        return url.replace('{z}', z.toString())
+          .replace('{y}', y.toString())
+          .replace('{x}', x.toString())
+      },
+      projection: projection,
+      tileGrid: new ol.tilegrid.TileGrid({
+        origin: tileOrigin,
+        resolutions: resolutions,
+        tileSize: 256
+      })
+    })
+  })
+  return layer
 }
 /**
  * Format length output.

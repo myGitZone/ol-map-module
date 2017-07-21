@@ -45,7 +45,7 @@
     },
     mounted() {
       let layerType = 'normal'
-      let {BASE_LAYER, BASE_LABLE_LAYER} = getBaseLayers(layerType, this.$ol)
+      let {BASE_LAYER, BASE_LABLE_LAYER} = getBaseLayers(layerType, this.$ol, this.viewParams.projection)
       setTimeout(() => {
         this.map = new this.$ol.Map({
           target: 'map',

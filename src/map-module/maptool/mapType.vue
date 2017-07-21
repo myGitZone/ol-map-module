@@ -81,7 +81,7 @@
             }
           }
         }
-        let {BASE_LAYER, BASE_LABLE_LAYER} = getBaseLayers(currentTypeName, this.$ol)
+        let {BASE_LAYER, BASE_LABLE_LAYER} = getBaseLayers(currentTypeName, this.$ol, this.map.getView().getProjection())
         this.map.addLayer(BASE_LAYER)
         this.map.addLayer(BASE_LABLE_LAYER)
         this.$emit('layerChange', {BASE_LAYER, BASE_LABLE_LAYER})

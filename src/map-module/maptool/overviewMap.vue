@@ -6,6 +6,9 @@
   export default {
     name: 'OverviewMap',
     props: {
+      viewParams: {
+        type: Object
+      },
       layers: {
         type: Array,
         default: []
@@ -49,14 +52,20 @@
           collapseLabel = '\u00BB'
           label = '\u00AB'
         }
+        this.viewParams.zoom = this.viewParams.zoom + 10
+        debugger
         this.overviewMapControl = new this.$ol.control.OverviewMap({
           className: className,
           layers: layers,
           collapseLabel: collapseLabel,
           label: label,
           collapsed: false,
-          target: 'overview-container'
+          target: 'overview-container',
+          view: new this.$ol.View(
+            this.viewParams
+          )
         })
+        // this.overviewMapControl.setMap(map)
         map.addControl(this.overviewMapControl)
       },
       // 外部调用，来修改鹰眼的图层
